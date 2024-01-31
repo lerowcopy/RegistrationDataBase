@@ -6,7 +6,7 @@ public class DataBase {
 
     public Connection connect () throws SQLException {
         con = DriverManager.getConnection("jdbc:sqlite:test.db");
-        String sql = "CREATE TABLE users(\n" +
+        String sql = "CREATE TABLE IF NOT EXISTS users(\n" +
                 "    id INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
                 "    login TEXT UNIQUE,\n" +
                 "    password TEXT\n" +
@@ -42,6 +42,9 @@ public class DataBase {
         else{
             if (RegistrationWindow.instance.second_jtx_reg.getText().length() <= 3){
                 System.out.println("Введите другой пароль. Минимальный размер пароля 3 символа");
+            }
+            else if (RegistrationWindow.instance.first_jtx_reg.getText().isEmpty()){
+                System.out.println("Введите другой логин. Минимальный размер логина 1 символ");
             }
             else{
                 String login = RegistrationWindow.instance.first_jtx_reg.getText();
