@@ -1,3 +1,7 @@
+import java.math.BigInteger;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.sql.*;
 import java.util.Objects;
 
@@ -23,7 +27,7 @@ public class DataBase {
         if (!resultSet.next()) {
             return "IL";
         }
-        else if (Objects.equals(resultSet.getString("password"), MainWindow.instance.second_jtf.getText())){
+        else if (Objects.equals(resultSet.getString("password"), hex(MainWindow.instance.second_jtf.getText(), 5))){
             return "OK";
         }
         else{
@@ -49,7 +53,7 @@ public class DataBase {
             else{
                 String login = RegistrationWindow.instance.first_jtx_reg.getText();
                 login = login.replaceAll(" ", "");
-                String password = RegistrationWindow.instance.second_jtx_reg.getText();
+                String password = hex(RegistrationWindow.instance.second_jtx_reg.getText(), 5);
                 sql = String.format("INSERT INTO users (login, password) VALUES ('%s', '%s')", login, password);
                 PreparedStatement st = con.prepareStatement(sql);
                 st.execute();
@@ -57,5 +61,26 @@ public class DataBase {
             }
         }
         return false;
+    }
+
+    public String hex(String str, int k){
+
+        byte[] messageDigest = new byte[0];
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.reset();
+            md.update(str.getBytes());
+            messageDigest = md.digest();
+
+        }catch (NoSuchAlgorithmException e){
+            System.err.println(e.getMessage());
+        }
+        BigInteger bigInt = new BigInteger(1, messageDigest);
+        String md5Hex = bigInt.toString(16);
+        while (md5Hex.length() < 32){
+            md5Hex = "0" + md5Hex;
+        }
+        if (k == 0)return md5Hex.toUpperCase();
+        else return hex(md5Hex, k - 1);
     }
 }
