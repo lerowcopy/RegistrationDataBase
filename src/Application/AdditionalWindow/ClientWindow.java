@@ -4,8 +4,6 @@ import Application.Application;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 public class ClientWindow extends JFrame {
@@ -50,18 +48,15 @@ public class ClientWindow extends JFrame {
         add(welcomeLabel, gbc);
 
 
-        logOutBtn.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    Application wnd = new Application();
-                    wnd.setVisible(true);
-                    dispose();
-                } catch (InterruptedException | SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
-
+        logOutBtn.addActionListener(e -> {
+            try {
+                Application wnd = new Application();
+                wnd.setVisible(true);
+                dispose();
+            } catch (InterruptedException | SQLException ex) {
+                throw new RuntimeException(ex);
             }
+
         });
 
     }

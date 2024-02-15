@@ -2,8 +2,6 @@ package Application;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.*;
 
 import Application.AdditionalWindow.Admin.AdminWindow;
@@ -18,7 +16,6 @@ public class Application extends JFrame {
     public static Application instance;
 
     public RegistrationWindow windowR;
-    public ClientWindow windowClient;
 
     public final DataBase dataBase = new DataBase();
 
@@ -65,43 +62,38 @@ public class Application extends JFrame {
 
         dataBase.connect();
 
-        AdminWindow wnd = new AdminWindow();
-        wnd.setVisible(true);
 
-
-        login.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                try{
-                    switch (dataBase.login()){
-                        case "OK":
-                            //System.out.println("Вы успешно вошли в систему.");
-                            windowClient = new ClientWindow(first_jtf.getText());
-                            windowClient.setVisible(true);
-                            dispose();
-                            break;
-                        case "IL":
-                            System.out.println("Вы неверно ввели имя пользователя, попробуй ещё раз.");
-                            first_jtf.setText("");
-                            second_jtf.setText("");
-                            break;
-                        case "IP":
-                            second_jtf.setText("");
-                            System.out.println("Вы неверное ввели пароль, попробуй ещё раз.");
-                            break;
-                    }
-                }catch (SQLException l){
-                    System.out.println(l.getMessage());
+        login.addActionListener(e -> {
+            try{
+                switch (dataBase.login()){
+                    case "admin":
+                        AdminWindow wnd = new AdminWindow();
+                        wnd.setVisible(true);
+                        dispose();
+                        break;
+                    case "OK":
+                        ClientWindow windowClient = new ClientWindow(first_jtf.getText());
+                        windowClient.setVisible(true);
+                        dispose();
+                        break;
+                    case "IL":
+                        System.out.println("Вы неверно ввели имя пользователя, попробуй ещё раз.");
+                        first_jtf.setText("");
+                        second_jtf.setText("");
+                        break;
+                    case "IP":
+                        second_jtf.setText("");
+                        System.out.println("Вы неверное ввели пароль, попробуй ещё раз.");
+                        break;
                 }
+            }catch (SQLException l){
+                System.out.println(l.getMessage());
             }
         });
 
-        register.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                windowR = new RegistrationWindow();
-                windowR.setVisible(true);
-            }
+        register.addActionListener(e -> {
+            windowR = new RegistrationWindow();
+            windowR.setVisible(true);
         });
 
     }
