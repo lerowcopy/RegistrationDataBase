@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.sql.*;
 
+import Application.AdditionalWindow.Admin.AdminWindow;
 import Application.AdditionalWindow.ClientWindow;
 import Application.AdditionalWindow.RegistrationWindow;
 import Application.DataBase.DataBase;
@@ -63,6 +64,9 @@ public class Application extends JFrame {
         add(register, gbc);
 
         dataBase.connect();
+
+        AdminWindow wnd = new AdminWindow();
+        wnd.setVisible(true);
 
 
         login.addActionListener(new ActionListener() {

@@ -7,6 +7,8 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 public class DataBase {
@@ -77,6 +79,18 @@ public class DataBase {
         return false;
     }
 
+    public List<String> getListName () throws SQLException {
+        List<String> list = new ArrayList<String>();
+        String sql = "SELECT login FROM PERSON";
+        PreparedStatement ps = con.prepareStatement(sql);
+        ResultSet resultSet = ps.executeQuery();
+
+        while (resultSet.next()){
+            list.add(resultSet.getString(1));
+        }
+        return list;
+    }
+
     public String hex(String str, int k){
 
         byte[] messageDigest = new byte[0];
@@ -98,4 +112,5 @@ public class DataBase {
         if (k == 0)return md5Hex.toUpperCase();
         else return hex(md5Hex, k - 1);
     }
+
 }

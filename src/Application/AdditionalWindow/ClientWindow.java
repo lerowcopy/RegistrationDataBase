@@ -10,17 +10,11 @@ import java.sql.SQLException;
 
 public class ClientWindow extends JFrame {
 
-    private JLabel welcomeLabel;
-
-    private JLabel nameUser;
-    private JButton logOutBtn;
-    private GridBagConstraints gbc;
-
     public ClientWindow (String name){
 
-        welcomeLabel = new JLabel(String.format("Здравствуйте, %s. Вы успешно вошли в систему", name));
-        nameUser = new JLabel(name);
-        logOutBtn = new JButton("LogOut");
+        JLabel welcomeLabel = new JLabel(String.format("Здравствуйте, %s. Вы успешно вошли в систему", name));
+        JLabel nameUser = new JLabel(name);
+        JButton logOutBtn = new JButton("LogOut");
 
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameUser.setHorizontalAlignment(SwingConstants.CENTER);
@@ -31,7 +25,7 @@ public class ClientWindow extends JFrame {
         setLocation(560, 340);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 
-        gbc = new GridBagConstraints(
+        GridBagConstraints gbc = new GridBagConstraints(
                 0, 0, 2, 1, 25, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(1, 1, 1, 1), 0, 0
