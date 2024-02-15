@@ -2,8 +2,6 @@ package Application.AdditionalWindow;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.sql.SQLException;
 
 import Application.DataBase.DataBase;
@@ -102,18 +100,15 @@ public class RegistrationWindow extends JFrame {
         );
         add(register, gbc);
 
-        register.addActionListener(new ActionListener() {
-            @Override
-            public void actionPerformed(ActionEvent e) {
-                Person user = createPerson();
-                try {
-                    if (dataBase.Registration(user)) {
-                        System.out.println("Пользователь успешно зарегистрирован");
-                        Application.instance.windowR.dispose();
-                    }
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
+        register.addActionListener(e -> {
+            Person user = createPerson();
+            try {
+                if (dataBase.Registration(user)) {
+                    System.out.println("Пользователь успешно зарегистрирован");
+                    Application.instance.windowR.dispose();
                 }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
             }
         });
     }
@@ -125,10 +120,5 @@ public class RegistrationWindow extends JFrame {
         String secondName = secondNameField.getText();
 
         return new Person(login, password, firstName, secondName);
-    }
-
-    public static void main(String[] args) {
-        RegistrationWindow wnd = new RegistrationWindow();
-        wnd.setVisible(true);
     }
 }

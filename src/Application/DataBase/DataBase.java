@@ -1,7 +1,6 @@
 package Application.DataBase;
 
 import Application.Application;
-import Application.AdditionalWindow.RegistrationWindow;
 
 import java.math.BigInteger;
 import java.security.MessageDigest;
@@ -14,18 +13,18 @@ import java.util.Objects;
 public class DataBase {
     public static Connection con = null;
 
-    public Connection connect () throws SQLException {
+    public void connect () throws SQLException {
         con = DriverManager.getConnection("jdbc:sqlite:test.db");
-        String sql = "CREATE TABLE IF NOT EXISTS Person (\n" +
-                "    id         INTEGER PRIMARY KEY AUTOINCREMENT,\n" +
-                "    Login      TEXT    UNIQUE,\n" +
-                "    Password   TEXT,\n" +
-                "    FirstName  TEXT,\n" +
-                "    SecondName TEXT\n" +
-                ")";
+        String sql = """
+                CREATE TABLE IF NOT EXISTS Person (
+                    id         INTEGER PRIMARY KEY AUTOINCREMENT,
+                    Login      TEXT    UNIQUE,
+                    Password   TEXT,
+                    FirstName  TEXT,
+                    SecondName TEXT
+                )""";
         PreparedStatement st = con.prepareStatement(sql);
         st.execute();
-        return con;
     }
 
     public String login() throws SQLException {
@@ -80,7 +79,7 @@ public class DataBase {
     }
 
     public List<String> getListName () throws SQLException {
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         String sql = "SELECT login FROM PERSON";
         PreparedStatement ps = con.prepareStatement(sql);
         ResultSet resultSet = ps.executeQuery();
@@ -105,12 +104,24 @@ public class DataBase {
             System.err.println(e.getMessage());
         }
         BigInteger bigInt = new BigInteger(1, messageDigest);
-        String md5Hex = bigInt.toString(16);
+        StringBuilder md5Hex = new StringBuilder(bigInt.toString(16));
         while (md5Hex.length() < 32){
-            md5Hex = "0" + md5Hex;
+            md5Hex.insert(0, "0");
         }
-        if (k == 0)return md5Hex.toUpperCase();
-        else return hex(md5Hex, k - 1);
+        if (k == 0)return md5Hex.toString().toUpperCase();
+        else return hex(md5Hex.toString(), k - 1);
+    }
+
+    public void changePassword (String login, String password) throws SQLException {
+        String newPassword = hex(password, 5);
+        String sql = String.format("UPDATE Person SET password = '%s' WHERE login = '%s'", newPassword, login);
+
+        PreparedStatement ps = con.prepareStatement(sql);
+        ps.execute();
+    }
+
+    public void execute(String sql) throws SQLException {
+        con.prepareStatement(sql).execute();
     }
 
 }
