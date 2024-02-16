@@ -24,6 +24,51 @@ public class Application extends JFrame {
 
     public Application() throws InterruptedException, SQLException {
         instance = this;
+
+        CreateWindow();
+
+        dataBase.connect();
+
+        AddActionForComponent();
+
+    }
+
+    private void AddActionForComponent() {
+        login.addActionListener(e -> {
+            try{
+                switch (dataBase.login()){
+                    case "admin":
+                        AdminWindow wnd = new AdminWindow();
+                        wnd.setVisible(true);
+                        dispose();
+                        break;
+                    case "OK":
+                        ClientWindow windowClient = new ClientWindow(first_jtf.getText());
+                        windowClient.setVisible(true);
+                        dispose();
+                        break;
+                    case "IL":
+                        System.out.println("Вы неверно ввели имя пользователя, попробуй ещё раз.");
+                        first_jtf.setText("");
+                        second_jtf.setText("");
+                        break;
+                    case "IP":
+                        second_jtf.setText("");
+                        System.out.println("Вы неверное ввели пароль, попробуй ещё раз.");
+                        break;
+                }
+            }catch (SQLException l){
+                System.out.println(l.getMessage());
+            }
+        });
+
+        register.addActionListener(e -> {
+            windowR = new RegistrationWindow();
+            windowR.setVisible(true);
+        });
+    }
+
+    private void CreateWindow() {
         setSize(300, 300);
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -59,43 +104,6 @@ public class Application extends JFrame {
         );
 
         add(register, gbc);
-
-        dataBase.connect();
-
-
-        login.addActionListener(e -> {
-            try{
-                switch (dataBase.login()){
-                    case "admin":
-                        AdminWindow wnd = new AdminWindow();
-                        wnd.setVisible(true);
-                        dispose();
-                        break;
-                    case "OK":
-                        ClientWindow windowClient = new ClientWindow(first_jtf.getText());
-                        windowClient.setVisible(true);
-                        dispose();
-                        break;
-                    case "IL":
-                        System.out.println("Вы неверно ввели имя пользователя, попробуй ещё раз.");
-                        first_jtf.setText("");
-                        second_jtf.setText("");
-                        break;
-                    case "IP":
-                        second_jtf.setText("");
-                        System.out.println("Вы неверное ввели пароль, попробуй ещё раз.");
-                        break;
-                }
-            }catch (SQLException l){
-                System.out.println(l.getMessage());
-            }
-        });
-
-        register.addActionListener(e -> {
-            windowR = new RegistrationWindow();
-            windowR.setVisible(true);
-        });
-
     }
 
 

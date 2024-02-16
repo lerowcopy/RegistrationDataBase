@@ -1,7 +1,6 @@
 package Application.AdditionalWindow;
 
 import Application.Application;
-import Application.DataBase.Person;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,10 +9,10 @@ import java.sql.SQLException;
 public class ClientWindow extends JFrame {
 
     public ClientWindow (String name){
-
         JLabel welcomeLabel = new JLabel(String.format("Здравствуйте, %s. Вы успешно вошли в систему", name));
         JLabel nameUser = new JLabel(name);
         JButton logOutBtn = new JButton("LogOut");
+
 
         welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
         nameUser.setHorizontalAlignment(SwingConstants.CENTER);
@@ -48,7 +47,6 @@ public class ClientWindow extends JFrame {
 
         add(welcomeLabel, gbc);
 
-        Person.instance.filter(Person.FIRST_NAME_FILTER, "misha" );
         logOutBtn.addActionListener(e -> {
             try {
                 Application wnd = new Application();

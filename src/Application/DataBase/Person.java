@@ -8,6 +8,9 @@ import java.io.PrintWriter;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -23,18 +26,18 @@ public class Person {
 
     private final DataBase dataBase = Application.instance.dataBase;
 
-    public Person (){
+    public Person() {
 
     }
 
-    public Person (String login, String password, String firstName, String secondName){
+    public Person(String login, String password, String firstName, String secondName) {
         loginP = login;
         passwordP = password;
         firstNameP = firstName;
         secondNameP = secondName;
     }
 
-    public Person get_by_name (String name) throws SQLException {
+    public Person get_by_name(String name) throws SQLException {
 
         String sql = String.format("SELECT * FROM Person WHERE login = '%s'", name);
 
@@ -58,79 +61,62 @@ public class Person {
         dataBase.execute(sql);
     }
 
-    public void filter(int filter_type, String name){
-        String sql = "";
-        switch (filter_type){
-            case 1:
+    public static List<String> filter(int filter_type, String name) {
+        String sql;
+        return switch (filter_type) {
+            case 1 -> {
                 sql = String.format("SELECT * FROM Person WHERE firstName = '%s'", name);
-                try (PreparedStatement p = DataBase.con.prepareStatement(sql)) {
-                    try (ResultSet resultSet = p.executeQuery()){
-                        JSONArray jsonArray = new JSONArray();
-                        while (resultSet.next()){
-                            String id = resultSet.getString("id");
-                            String login = resultSet.getString("login");
-                            String password = resultSet.getString("password");
-                            String firstName = resultSet.getString("firstName");
-                            String secondName = resultSet.getString("secondName");
-
-                            JSONObject jsonObject = new JSONObject();
-
-                            jsonObject.put("id", id);
-                            jsonObject.put("login", login);
-                            jsonObject.put("password", password);
-                            jsonObject.put("firstName", firstName);
-                            jsonObject.put("secondName", secondName);
-
-                            jsonArray.put(jsonObject);
-                        }
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("table", jsonArray);
-
-                        String pathToSave = System.getProperty("user.dir") + "\\get.json";
-                        PrintWriter out = new PrintWriter(new FileWriter(pathToSave));
-                        String outJ = jsonObject.toString(4);
-                        out.write("ASDF");
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } catch (SQLException e) {
-                    throw new RuntimeException(e);
-                }
-                break;
-            case 2:
+                yield sqlFilterPart(sql);
+            }
+            case 2 -> {
                 sql = String.format("SELECT * FROM Person WHERE secondName = '%s'", name);
-                try (PreparedStatement p = DataBase.con.prepareStatement(sql)) {
-                    try (ResultSet resultSet = p.executeQuery()){
-                        JSONArray jsonArray = new JSONArray();
-                        while (resultSet.next()){
-                            String id = resultSet.getString("id");
-                            String login = resultSet.getString("login");
-                            String password = resultSet.getString("password");
-                            String firstName = resultSet.getString("firstName");
-                            String secondName = resultSet.getString("secondName");
+                yield sqlFilterPart(sql);
+            }
+            default -> null;
+        };
+    }
 
-                            JSONObject jsonObject = new JSONObject();
+    private static List<String> sqlFilterPart(String sql) {
+        List<String> loginsList = new ArrayList<>();
+        try (PreparedStatement p = DataBase.con.prepareStatement(sql)) {
+            try (ResultSet resultSet = p.executeQuery()) {
+                JSONArray jsonArray = new JSONArray();
+                JSONObject jsonObject;
+                while (resultSet.next()) {
+                    String id = resultSet.getString("id");
+                    String login = resultSet.getString("login");
+                    String password = resultSet.getString("password");
+                    String firstName = resultSet.getString("firstName");
+                    String secondName = resultSet.getString("secondName");
 
-                            jsonObject.put("id", id);
-                            jsonObject.put("login", login);
-                            jsonObject.put("password", password);
-                            jsonObject.put("firstName", firstName);
-                            jsonObject.put("secondName", secondName);
-                        }
-                        JSONObject jsonObject = new JSONObject();
-                        jsonObject.put("table", jsonArray);
+                    assert false;
+                    loginsList.add(login);
 
-                        String pathToSave = System.getProperty("user.dir") + "\\get.json";
-                        PrintWriter out = new PrintWriter(new FileWriter(pathToSave));
-                        out.write(jsonObject.toString(4));
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-                } catch (SQLException e) {
+                    jsonObject = new JSONObject();
+
+                    jsonObject.put("id", id);
+                    jsonObject.put("login", login);
+                    jsonObject.put("password", password);
+                    jsonObject.put("firstName", firstName);
+                    jsonObject.put("secondName", secondName);
+
+                    jsonArray.put(jsonObject);
+                }
+                assert false;
+                JSONObject finallyJson = new JSONObject();
+                finallyJson.put("List", jsonArray);
+                String pathToSave = System.getProperty("user.dir") + "\\get.json";
+                try (PrintWriter out = new PrintWriter(new FileWriter(pathToSave))) {
+                    String outJ = finallyJson.toString(4);
+                    out.write(outJ);
+                } catch (IOException e) {
                     throw new RuntimeException(e);
                 }
-                break;
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
+        return loginsList;
     }
 
 }

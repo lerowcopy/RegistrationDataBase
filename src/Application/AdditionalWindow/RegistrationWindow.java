@@ -17,12 +17,29 @@ public class RegistrationWindow extends JFrame {
     public JButton register = new JButton("register");
     private final DataBase dataBase;
 
-    public static RegistrationWindow instance;
-
     public RegistrationWindow() {
-        instance = this;
         dataBase = Application.instance.dataBase;
 
+        CreateWindow();
+
+        AddActionForComponent();
+    }
+
+    private void AddActionForComponent() {
+        register.addActionListener(e -> {
+            Person user = createPerson();
+            try {
+                if (dataBase.Registration(user)) {
+                    System.out.println("Пользователь успешно зарегистрирован");
+                    Application.instance.windowR.dispose();
+                }
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+        });
+    }
+
+    private void CreateWindow() {
         setSize(300, 300);
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -99,18 +116,6 @@ public class RegistrationWindow extends JFrame {
                 new Insets(1, 1, 1, 1), 0, 0
         );
         add(register, gbc);
-
-        register.addActionListener(e -> {
-            Person user = createPerson();
-            try {
-                if (dataBase.Registration(user)) {
-                    System.out.println("Пользователь успешно зарегистрирован");
-                    Application.instance.windowR.dispose();
-                }
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
     }
 
     private Person createPerson(){
