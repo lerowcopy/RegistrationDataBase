@@ -1,6 +1,7 @@
 package Application.AdditionalWindow;
 
 import Application.Application;
+import Application.DataBase.Person;
 
 import javax.swing.*;
 import java.awt.*;
@@ -47,7 +48,7 @@ public class ClientWindow extends JFrame {
 
         add(welcomeLabel, gbc);
 
-
+        Person.instance.filter(Person.FIRST_NAME_FILTER, "misha" );
         logOutBtn.addActionListener(e -> {
             try {
                 Application wnd = new Application();
