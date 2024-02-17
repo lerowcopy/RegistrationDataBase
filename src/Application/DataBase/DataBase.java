@@ -45,7 +45,7 @@ public class DataBase {
         }
     }
 
-    public boolean Registration (Person person) throws  SQLException{
+    public boolean NewUser(Person person) throws  SQLException{
         String login = person.loginP;
         String password = person.passwordP;
         String firstName = person.firstNameP;

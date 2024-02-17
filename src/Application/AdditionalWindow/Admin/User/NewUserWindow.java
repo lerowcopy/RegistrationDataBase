@@ -1,26 +1,31 @@
 package Application.AdditionalWindow.Admin.User;
 
 import Application.AdditionalWindow.Admin.AdminWindow;
+import Application.Application;
+import Application.DataBase.DataBase;
 import Application.DataBase.Person;
 
 import javax.swing.*;
 import java.awt.*;
 import java.sql.SQLException;
 
-public class UserInformationWindow extends JFrame {
+public class NewUserWindow extends JFrame {
+    private final DataBase dataBase = Application.instance.dataBase;
+    private final AdminWindow adminWindow;
+    public NewUserWindow(AdminWindow window){
+        adminWindow = window;
 
-    public UserInformationWindow (Person user, AdminWindow adminWindow){
-        JTextField login = new JTextField(user.loginP);
+        JTextField login = new JTextField();
         JLabel loginL = new JLabel("Login");
-        JTextField firstName = new JTextField(user.firstNameP);
+        JTextField password = new JTextField();
+        JLabel passwordL = new JLabel("Password");
+        JTextField firstName = new JTextField();
         JLabel firstNameL = new JLabel("First name");
-        JTextField secondName = new JTextField(user.secondNameP);
+        JTextField secondName = new JTextField();
         JLabel secondNameL = new JLabel("Second name");
 
-        JButton changePassword = new JButton("Change password");
-        JButton save = new JButton("Save");
+        JButton add = new JButton("add");
         JButton cancel = new JButton("Cancel");
-        JButton delete = new JButton("Delete");
 
         setSize(300, 400);
         setLocation(910, 340);
@@ -47,82 +52,70 @@ public class UserInformationWindow extends JFrame {
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(firstNameL, gbc);
+        add(passwordL, gbc);
 
         gbc = new GridBagConstraints(
                 0, 3, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(firstName, gbc);
+        add(password, gbc);
 
         gbc = new GridBagConstraints(
                 0, 4, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(secondNameL, gbc);
+        add(firstNameL, gbc);
 
         gbc = new GridBagConstraints(
                 0, 5, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(secondName, gbc);
+        add(firstName, gbc);
 
         gbc = new GridBagConstraints(
                 0, 6, 2, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(changePassword, gbc);
+        add(secondNameL, gbc);
 
         gbc = new GridBagConstraints(
-                0, 7, 1, 1, 1, 1,
+                0, 7, 2, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(5, 5, 2, 5), 0, 0
+        );
+        add(secondName, gbc);
+
+
+        gbc = new GridBagConstraints(
+                0, 8, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
         add(cancel, gbc);
 
         gbc = new GridBagConstraints(
-                1, 7, 1, 1, 1, 1,
+                1, 8, 1, 1, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(5, 5, 2, 5), 0, 0
         );
-        add(save, gbc);
-
-        gbc = new GridBagConstraints(
-                0, 8, 2, 1, 1, 1,
-                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
-                new Insets(5, 5, 2, 5), 0, 0
-        );
-
-        add(delete, gbc);
+        add(add, gbc);
 
         cancel.addActionListener(e -> dispose());
 
-        save.addActionListener(e -> {
+        add.addActionListener(e -> {
             try {
-                user.save(login.getText(), firstName.getText(), secondName.getText());
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        });
-
-        changePassword.addActionListener(e -> {
-            ChangePasswordWindow wnd = new ChangePasswordWindow(user);
-            wnd.setVisible(true);
-        });
-
-        delete.addActionListener(e -> {
-            try {
-                user.delete(user.loginP);
-                adminWindow.deleteButton(user.loginP);
+                if(dataBase.NewUser(new Person(login.getText(), password.getText(), firstName.getText(), secondName.getText()))){
+                    adminWindow.usersName = dataBase.getListName();
+                    adminWindow.NewButton(adminWindow.usersName.size() - 1);
+                }
                 dispose();
             } catch (SQLException ex) {
                 throw new RuntimeException(ex);
             }
         });
-
     }
 }

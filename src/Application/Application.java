@@ -73,6 +73,7 @@ public class Application extends JFrame {
         setLayout(new GridBagLayout());
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
+        setTitle("Application");
 
         GridBagConstraints gbc = new GridBagConstraints(
                 0, 0, 2, 1, 1, 1,

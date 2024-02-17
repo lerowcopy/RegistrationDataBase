@@ -61,6 +61,12 @@ public class Person {
         dataBase.execute(sql);
     }
 
+    public void delete(String login) throws SQLException {
+        String sql = String.format("DELETE FROM Person WHERE login = '%s'", login);
+        dataBase.execute(sql);
+
+    }
+
     public static List<String> filter(int filter_type, String name) {
         String sql;
         return switch (filter_type) {

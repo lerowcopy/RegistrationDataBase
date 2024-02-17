@@ -29,7 +29,7 @@ public class RegistrationWindow extends JFrame {
         register.addActionListener(e -> {
             Person user = createPerson();
             try {
-                if (dataBase.Registration(user)) {
+                if (dataBase.NewUser(user)) {
                     System.out.println("Пользователь успешно зарегистрирован");
                     Application.instance.windowR.dispose();
                 }

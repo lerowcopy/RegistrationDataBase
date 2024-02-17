@@ -1,5 +1,6 @@
 package Application.AdditionalWindow.Admin;
 
+import Application.AdditionalWindow.Admin.User.NewUserWindow;
 import Application.AdditionalWindow.Admin.User.UserInformationWindow;
 import Application.Application;
 import Application.DataBase.DataBase;
@@ -22,15 +23,29 @@ public class AdminWindow extends JFrame {
     private final JLabel firstNameFilter = new JLabel("Filter. First Name: ");
     private final JLabel secondNameFilter = new JLabel("Filter. Second Name: ");
     private final JButton logOutBtn = new JButton("Log out");
+    private final JButton addNewUser = new JButton("Add user");
     public JTextField firstNameFilterEntry = new JTextField();
     public JTextField secondNameFilterEntry = new JTextField();
     public JPanel filterPanel = new JPanel();
     public JPanel panelForUsers = new JPanel();
     public JScrollPane scrollPane = new JScrollPane(panelForUsers);
     public List<JButton> usersBtn = new ArrayList<>();
+    public List<String> usersName = dataBase.getListName();
 
-    
-    
+    private final ActionListener btnAL = e -> {
+        try {
+            String name = ((JButton)e.getSource()).getText();
+            Person user = Person.instance.get_by_name(name);
+            UserInformationWindow wnd = new UserInformationWindow(user, this);
+            wnd.setVisible(true);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+    };
+
+
+
+
     public AdminWindow () throws SQLException {
 
         CreateWindow();
@@ -67,7 +82,7 @@ public class AdminWindow extends JFrame {
 
                     List<String> usersLogin = Person.filter(Person.FIRST_NAME_FILTER, firstNameFilterEntry.getText());
                     assert usersLogin != null;
-                    FirstNameFilter(usersLogin, usersBtn, panelForUsers);
+                    nameFilter(usersLogin, usersBtn, panelForUsers);
                 }else if (e.getKeyCode() == KeyEvent.VK_ENTER && firstNameFilterEntry.getText().isEmpty()){
                     for (JButton jButton : usersBtn) {
                         panelForUsers.add(jButton);
@@ -94,7 +109,7 @@ public class AdminWindow extends JFrame {
 
                     List<String> usersLogin = Person.filter(Person.SECOND_NAME_FILTER, secondNameFilterEntry.getText());
                     assert usersLogin != null;
-                    FirstNameFilter(usersLogin, usersBtn, panelForUsers);
+                    nameFilter(usersLogin, usersBtn, panelForUsers);
                 }else if (e.getKeyCode() == KeyEvent.VK_ENTER && secondNameFilterEntry.getText().isEmpty()){
                     for (JButton jButton : usersBtn) {
                         panelForUsers.add(jButton);
@@ -103,13 +118,14 @@ public class AdminWindow extends JFrame {
                 }
             }
         });
+        addNewUser.addActionListener(e -> {
+            NewUserWindow wnd = new NewUserWindow(this);
+            wnd.setVisible(true);
+        });
     }
 
-    private void CreateWindow() throws SQLException {
+    private void CreateWindow() {
         nameUser.setHorizontalAlignment(SwingConstants.CENTER);
-
-        List<String> usersName = dataBase.getListName();
-
 
         filterPanel.setLayout(new GridLayout(2, 1));
         panelForUsers.setLayout(new GridLayout(0, 1));
@@ -117,21 +133,10 @@ public class AdminWindow extends JFrame {
 
         int currentCountUsers = usersName.size();
 
-        ActionListener btnAL = e -> {
-            try {
-                String name = ((JButton)e.getSource()).getText();
-                Person user = Person.instance.get_by_name(name);
-                UserInformationWindow wnd = new UserInformationWindow(user);
-                wnd.setVisible(true);
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-        };
-
-
         setSize(750, 300);
+        setLocationRelativeTo(null);
+        setResizable(false);
         setLayout(new GridBagLayout());
-        setLocation(560, 340);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setTitle("Admin panel");
 
@@ -153,7 +158,7 @@ public class AdminWindow extends JFrame {
 
 
         gbc = new GridBagConstraints(
-                6, 1, 1, 1, 1, 1,
+                6, 2, 1, 4, 1, 1,
                 GridBagConstraints.PAGE_START, GridBagConstraints.BOTH,
                 new Insets(5, 1, 5, 1), 0, 0
         );
@@ -162,6 +167,9 @@ public class AdminWindow extends JFrame {
         filterPanel.add(firstNameFilterEntry);
         filterPanel.add(secondNameFilter);
         filterPanel.add(secondNameFilterEntry);
+
+        firstNameFilterEntry.setMaximumSize(new Dimension(100, 50));
+        secondNameFilterEntry.setMaximumSize(new Dimension(100, 50));
 
         add(filterPanel, gbc);
 
@@ -174,27 +182,55 @@ public class AdminWindow extends JFrame {
         add(usersLabel, gbc);
 
         for (int i = 0; i < currentCountUsers; ++i){
-            JButton btn = new JButton(usersName.get(i));
-            btn.setSize(new Dimension(300, 150));
-
-            btn.addActionListener(btnAL);
-
-            usersBtn.add(btn);
-
-            panelForUsers.add(usersBtn.get(i));
-
+            NewButton(i);
         }
 
         gbc = new GridBagConstraints(
-                0, 2, 4, 5, 1, 1,
+                0, 2, 4, 4, 1, 1,
                 GridBagConstraints.CENTER, GridBagConstraints.BOTH,
                 new Insets(1, 1, 1, 1), 0, 0
         );
 
+        scrollPane.setPreferredSize(new Dimension(300, 300));
+        scrollPane.setMaximumSize(new Dimension(10, 300));
+
         add(scrollPane, gbc);
+
+        gbc = new GridBagConstraints(
+                0, 6, 4, 1, 1, 1,
+                GridBagConstraints.CENTER, GridBagConstraints.BOTH,
+                new Insets(1, 1, 1, 1), 0, 0
+        );
+
+        add(addNewUser, gbc);
     }
 
-    private static void FirstNameFilter(List<String> usersLogin, List<JButton> usersBtn, JPanel panelForUsers) {
+    public void NewButton(int i) {
+        JButton btn = new JButton(usersName.get(i));
+        btn.setSize(new Dimension(300, 150));
+
+        btn.addActionListener(btnAL);
+
+        usersBtn.add(btn);
+
+        panelForUsers.add(usersBtn.get(i));
+
+        panelForUsers.updateUI();
+    }
+
+    public void deleteButton(String login) throws SQLException {
+        for (int i = 0; i < usersBtn.size(); ++i){
+            if (usersBtn.get(i).getText().equals(login)){
+                panelForUsers.remove(usersBtn.get(i));
+                usersBtn.remove(i);
+                panelForUsers.updateUI();
+                break;
+            }
+        }
+        usersName = dataBase.getListName();
+    }
+
+    private static void nameFilter(List<String> usersLogin, List<JButton> usersBtn, JPanel panelForUsers) {
         List<Integer> indexFilter = new ArrayList<>();
 
         assert usersLogin != null;
@@ -202,6 +238,7 @@ public class AdminWindow extends JFrame {
             for (int j = 0; j < usersBtn.size(); ++j) {
                 if (Objects.equals(usersBtn.get(j).getText(), s)) {
                     indexFilter.add(j);
+                    break;
                 }
             }
         }
