@@ -110,7 +110,14 @@ public class NewUserWindow extends JFrame {
             try {
                 if(dataBase.NewUser(new Person(login.getText(), password.getText(), firstName.getText(), secondName.getText()))){
                     adminWindow.usersName = dataBase.getListName();
-                    adminWindow.NewButton(adminWindow.usersName.size() - 1);
+                    int index = 0;
+                    for (int i = 0; i < adminWindow.usersName.size(); ++i){
+                        if (adminWindow.usersName.get(i).equals(login.getText())){
+                            index = i;
+                            break;
+                        }
+                    }
+                    adminWindow.NewButton(index);
                 }
                 dispose();
             } catch (SQLException ex) {

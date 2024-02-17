@@ -213,9 +213,10 @@ public class AdminWindow extends JFrame {
 
         usersBtn.add(btn);
 
-        panelForUsers.add(usersBtn.get(i));
+        panelForUsers.add(usersBtn.get(usersBtn.size() - 1));
 
         panelForUsers.updateUI();
+
     }
 
     public void deleteButton(String login) throws SQLException {
